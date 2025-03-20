@@ -4,6 +4,49 @@ import (
 	"encoding/json"
 )
 
+// General
+
+type Position struct {
+	Line uint      `json:"line"`
+	Character uint `json:"character"`
+}
+
+type Range struct {
+	Start Position `json:"start"`
+	End Position   `json:"end"`
+}
+
+
+type ServerInfo struct {
+	Name string    `json:"name"`
+	Version string `json:"version"`
+}
+
+// Base
+
+type Request struct {
+	RPC string `json:"jsonrpc"`
+	ID int `json:"id"`
+	Method string `json:"method"`
+	Params json.RawMessage `json:"params,omitempty"`
+}
+
+type Response struct {
+	RPC string `json:"jsonrpc"`	
+	ID *int `json:"id,omitempty"`
+	Result json.RawMessage `json:"result,omitempty"`
+	Error json.RawMessage `json:"error,omitempty"`
+}
+
+type Notification struct {
+	RPC string `json:"jsonrpc"`
+	Method string `json:"method"`
+	Params json.RawMessage `json:"params,omitempty"`
+}
+
+
+// TextDocument
+
 type TextDocumentIdentifier struct{
 	Uri string `json:"uri"`
 	Version int `json:"version"`
@@ -16,49 +59,30 @@ type TextDocumentItem struct{
 	Text string `json:"text"`
 }
 
-type Position struct {
-	Line uint      `json:"line"`
-	Character uint `json:"character"`
-}
-
-type Range struct {
-	Start Position `json:"start"`
-	End Position   `json:"end"`
-}
-
 type TextDocumentContentChangeEvent struct {
 	Range         Range  `json:"range"`
 	RangeLength   uint   `json:"rangeLength"`
 	Text          string `json:"text"`
 }
 
+// DidChange
+
 type DidChangeTextDocumentParams struct {
 	TextDocument TextDocumentIdentifier             `json:"textDocument"`
 	ContentChanges []TextDocumentContentChangeEvent   `json:"contentChanges"`
 }
 
+// DidOpen
 type DidOpenDocumentParams struct {
 	TextDocument TextDocumentItem `json:"textDocument"`
 }
 
-type Request struct {
-	RPC string `json:"jsonrpc"`
-	ID int `json:"id"`
-	Method string `json:"method"`
-	Params json.RawMessage `json:"params"`
-}
+// Capabilities
 
-type Response struct {
-	RPC string `json:"jsonrpc"`	
-	ID *int `json:"id,omitempty"`
-
-	// Result
-	// Error
-}
-
-type Notification struct {
-	JSONRPC string `json:"jsonrpc"`
-	Method string `json:"method"`
+type ServerCapabilities struct {
+	//	HoverProvider bool `json:"hoverProvider"`
+	TextDocumentSync TextDocumentSync `json:"textDocumentSync"`
+	Workspace Workspace `json:"workspace"`
 }
 
 type TextDocumentSyncKind int
@@ -74,16 +98,13 @@ type TextDocumentSync struct {
 	Change TextDocumentSyncKind `json:"change"`
 }
 
-type ServerCapabilities struct {
-	//	HoverProvider bool `json:"hoverProvider"`
-	TextDocumentSync TextDocumentSync `json:"textDocumentSync"`
+// Initialize Params
+type InitializeParams struct{
+	ProcessId int `json:"processId"`
+	WorkspaceFolders []WorkspaceFolder `json:"workspaceFolders,omitempty"`
 }
 
-type ServerInfo struct {
-	Name string    `json:"name"`
-	Version string `json:"version"`
-}
-
+// Initialize 
 type InitializeResponse struct {
 	Response
 	Result InitializeResult `json:"result"`
@@ -94,5 +115,40 @@ type InitializeResult struct {
 	ServerInfo ServerInfo `json:"serverInfo"`
 }
 
+// Workspaces
+type Workspace struct {
+	WorkspaceFolders WorkspaceFoldersServerCapabilities `json:"workspaceFolders"`
+}
 
+type WorkspaceFoldersServerCapabilities struct {
+	Supported bool `json:"supported"`
+	//	ChangeNotifications string `json:"changeNotifications"`
+}
 
+type WorkspaceFolder struct{
+	Uri string `json:"uri"`
+	Name string `json:"name"`
+}
+
+// Diagnostics
+type Diagnostic struct {
+	Range           Range `json:"range"`
+	Severity        int    `json:"severity,omitempty"`
+	Code            string `json:"code,omitempty"`
+	CodeDescription struct {
+		Description string `json:"description"`
+	} `json:"codeDescription,omitempty"`
+	Source             string   `json:"source.omitempty"`
+	Message            string   `json:"message,omitempty"`
+	Tags               []string `json:"tags,omitempty"`
+	RelatedInformation []struct {
+		RelatedInfo string `json:"relatedInfo"`
+	} `json:"relatedInformation,omitempty"`
+	Data               string `json:"data"`
+}
+
+type PublishDiagnosticsParams struct {
+	URI        string  `json:"uri"`
+	Version    *int          `json:"version,omitempty"`
+	Diagnostics []Diagnostic `json:"diagnostics"`
+}

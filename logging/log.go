@@ -20,3 +20,7 @@ func ReceivedMessage(str string){
 func SentMessage(str string){
 	Logger.Printf("Sent Message:\n%s\n", str)
 }
+
+func HandledMessage(str string){
+	Logger.Printf("Handled Message:\n%s\n", str)
+}

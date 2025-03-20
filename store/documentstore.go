@@ -2,6 +2,7 @@ package store
 
 import (
 	"fmt"
+	"os"
 	//	"log"
 	"riscv-lsp/logging"
 	"riscv-lsp/types"
@@ -22,13 +23,24 @@ func Init(){
 	Store.files = make(map[string]File)
 }
 
-func OpenFile(path string, content string){
+
+func OpenFile(path string, version int, content string){
 	logging.Logger.Printf("Opening %s\n", path)	
-	Store.files[path] = File{[]byte(content),-1,true}
+	Store.files[path] = File{[]byte(content),version,true}
 	//	logging.Logger.Printf("File Buffer:\n%s\n",FileContents(path))
 	//	indices := FindNewLineIndices(string(FileContents(path)))
 	//	logging.Logger.Printf("Found New Line Indexes %v\n",indices)
 }
+
+func OpenFileFromDisk(path string){
+	logging.Logger.Printf("Opening %s\n", path)
+	content, _ := os.ReadFile(path)
+	Store.files[path] = File{[]byte(content),0,true}
+	//	logging.Logger.Printf("File Buffer:\n%s\n",FileContents(path))
+	//	indices := FindNewLineIndices(string(FileContents(path)))
+	//	logging.Logger.Printf("Found New Line Indexes %v\n",indices)
+}
+
 
 func CloseFile(path string){
 	f:=Store.files[path]
@@ -103,17 +115,26 @@ func PositionToOffset(str string, pos types.Position) (uint, error){
 	return lineoffset + i, nil
 }
 
-func ModifyFile(path string, rng types.Range, text string){
+func ModifyFile(path string, rng types.Range, version int, text string){
 	logging.Logger.Printf("Modifying %s\n",path)
 	orig  := string(Store.files[path].content)
 	modified := ApplyChange(orig, rng, text)
-	Store.files[path] = File{content: []byte(modified)}	
-	//	logging.Logger.Printf("File Buffer:\n%s\n",FileContents(path))
+	Store.files[path] = File{content: []byte(modified), version: version, open: true}	
+	//	logging.Logger.Printf("File Buffer for %s:\n%s\n",path,FileContents(path))
 }
 
 func FileContents(path string) []byte{return Store.files[path].content}
 
+func GetFile(path string)(File, bool){
+	f, ok := Store.files[path]
+	return f, ok
+}
+
 func IsOpened(path string) bool{
 	_, open := Store.files[path]
 	return open
+}
+
+func GetFileVersion(path string)int{
+	return Store.files[path].version
 }

@@ -6,9 +6,9 @@ import (
 	"riscv-lsp/logging"
 	"riscv-lsp/methods"
 	"riscv-lsp/rpc"
+	"riscv-lsp/server"
 	"riscv-lsp/store"
 )
-
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
@@ -33,22 +33,42 @@ func main() {
 
 }
 
+
 func handleMethod(wr *os.File, method string, contents []byte){
-	switch method{
-		case "initialize":
-		resp := rpc.EncodeMessage(methods.HandleInitialize(contents))
-		wr.Write([]byte(resp))		
-		logging.SentMessage(string(resp))
-		case "textDocument/didChange":
-		methods.HandleTextDocumentDidChange(contents)
-		case "textDocument/didOpen":
-		methods.HandleTextDocumentDidOpen(contents)
-		case "textDocument/didClose":
-		methods.HandleTextDocumentDidClose(contents)
-		case "shutdown":
+	switch method {
+	case "initialize":
+		// Send Initialize Response
+		SendMessage(wr, methods.HandleInitialize(contents))
 		
-		case "exit":
+	case "initialized":
+		// SendMessage(wr, methods.WorkspaceFoldersRequest())
+		server.Init()
+
+	// Notifications
+	case "textDocument/didChange":
+		logging.HandledMessage(string(contents))
+		methods.HandleTextDocumentDidChange(contents)
+		// TODO: After implementing concurrency, do workspacediagnostics concurrently with a timer and not after every change
+		methods.SendWorkspacesDiagnostics(wr)
+		
+	case "textDocument/didOpen":
+		logging.HandledMessage(string(contents))
+		methods.HandleTextDocumentDidOpen(contents)
+
+		
+	case "textDocument/didClose":
+		logging.HandledMessage(string(contents))
+		methods.HandleTextDocumentDidClose(contents)
+
+	case "shutdown":
+		server.Close()
+	case "exit":
 		os.Exit(0)
 	}
 }
 
+func SendMessage(wr *os.File, msg any){
+	resp := rpc.EncodeMessage(msg)
+	wr.Write([]byte(resp))
+	logging.SentMessage(string(resp))
+}
