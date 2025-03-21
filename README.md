@@ -1,5 +1,5 @@
 # RISC-V LSP
-This is project to learn about LSP's and support getting LSP features when writing RISC-V code on linux x86 systems
+This is a project to learn about LSP's and implement support for LSP features when writing RISC-V code on linux x86 systems  
 Work In Progress.
 
 ## Guide
@@ -19,7 +19,7 @@ Will fix this by making a separate documentation package
     - [ ] Better Build File System
 - [x] Hover Documentation Support
     - [x] Registers/Opcodes Documentation
-    - [ ] Make Registers/Opcodes Documentation a Separate Package
+    - [x] Make Registers/Opcodes Documentation a Separate File
 - [ ] TreeSitter
 - [ ] Code-Completion
 - [ ] Document Symbols
