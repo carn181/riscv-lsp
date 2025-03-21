@@ -8,6 +8,7 @@ import (
 	"riscv-lsp/rpc"
 	"riscv-lsp/server"
 	"riscv-lsp/store"
+	"riscv-lsp/symbols"
 )
 
 func main() {
@@ -15,8 +16,9 @@ func main() {
 	logging.Init()
 	store.Init()
 	writer := os.Stdout
-	
+	symbols.Init()
 	scanner.Split(rpc.Split)
+	
 	for scanner.Scan() {
 		msg := scanner.Bytes()
 		method, contents , err := rpc.DecodeMessage(msg)
@@ -59,6 +61,9 @@ func handleMethod(wr *os.File, method string, contents []byte){
 	case "textDocument/didClose":
 		logging.HandledMessage(string(contents))
 		methods.HandleTextDocumentDidClose(contents)
+
+	case "textDocument/hover":
+		methods.HandleHover(wr, contents)
 
 	case "shutdown":
 		server.Close()

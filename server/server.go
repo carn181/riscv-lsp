@@ -30,7 +30,8 @@ func Init(){
 	if err != nil{
 		panic(err)
 	}
-	logging.Logger.Printf("Initialized Server\n")
+	currDir, _ := os.Getwd()
+	logging.Logger.Printf("Initialized Server with current directory %s\n", currDir)
 }
 
 func Close(){

@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"riscv-lsp/store"
 	"riscv-lsp/types"
+	"riscv-lsp/utils"
 	"slices"
 	"strconv"
 	"strings"
@@ -24,7 +25,7 @@ var Diagnostics map[string]*[]types.Diagnostic
 func AssemblerError2Diagnostic(path string, err AssemblerError)types.Diagnostic{
 	fileContents := store.FileContents(filepath.Join(path,err.File))
 
-	lines := store.FindNewLineIndices(string(fileContents))
+	lines := utils.FindNewLineIndices(string(fileContents))
 	var f, n uint
 	f = lines[err.Line-1]
 	if err.Line >= uint(len(lines)){

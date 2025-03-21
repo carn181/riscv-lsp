@@ -2,8 +2,10 @@ package utils_test
 
 import (
 	"os"
+	"riscv-lsp/types"
 	"riscv-lsp/utils"
 	"testing"
+	"fmt"
 )
 
 func TestUri2Path(t *testing.T){
@@ -26,4 +28,10 @@ func TestFileExists(t *testing.T){
 	if utils.FileExists(path){
 		t.Fatalf("Path %s doesn't exist, but FileExists doesn't recognize that", path)
 	}	
+}
+
+func TestWordAtPos(t *testing.T){
+	teststr := "worda,wordb wordc"
+	word := utils.WordAtPos(teststr, types.Position{Line:0,Character:7})
+	fmt.Print(word)
 }

@@ -49,6 +49,10 @@ type Notification struct {
 
 type TextDocumentIdentifier struct{
 	Uri string `json:"uri"`
+}
+
+type VersionedTextDocumentIdentifier struct{
+	Uri string `json:"uri"`
 	Version int `json:"version"`
 }
 
@@ -68,7 +72,7 @@ type TextDocumentContentChangeEvent struct {
 // DidChange
 
 type DidChangeTextDocumentParams struct {
-	TextDocument TextDocumentIdentifier             `json:"textDocument"`
+	TextDocument VersionedTextDocumentIdentifier             `json:"textDocument"`
 	ContentChanges []TextDocumentContentChangeEvent   `json:"contentChanges"`
 }
 
@@ -80,7 +84,7 @@ type DidOpenDocumentParams struct {
 // Capabilities
 
 type ServerCapabilities struct {
-	//	HoverProvider bool `json:"hoverProvider"`
+	HoverProvider bool `json:"hoverProvider"`
 	TextDocumentSync TextDocumentSync `json:"textDocumentSync"`
 	Workspace Workspace `json:"workspace"`
 }
@@ -151,4 +155,47 @@ type PublishDiagnosticsParams struct {
 	URI        string  `json:"uri"`
 	Version    *int          `json:"version,omitempty"`
 	Diagnostics []Diagnostic `json:"diagnostics"`
+}
+
+// Hover Support
+type TextDocumentPositionParams struct {
+  TextDocument TextDocumentIdentifier `json:"textDocument"`
+  Position     Position               `json:"position"`
+}
+
+// Markup
+// A string for now
+type MarkedString string
+
+// Define the Hover struct
+type Hover struct {
+  Contents MarkedString `json:"contents"` // Can be MarkedString, []MarkedString, or MarkupContent
+  Range    *Range      `json:"range,omitempty"` // Optional field
+}
+
+
+// Symbols
+
+type Register struct {
+	Register    string `json:"register"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Type        string `json:"type"`
+}
+
+type RegistersList struct {
+	Registers []Register `json:"Registers"`
+}
+
+type Opcode struct {
+	Name           string `json:"name"`
+	Format         string `json:"format"`
+	Description    string `json:"description"`
+	Implementation string `json:"implementation,omitempty"`
+	Expansion      string `json:"expansion,omitempty"`
+	Sdescription   string `json:"sdescription,omitempty"`
+} 
+
+type OpcodesList struct {
+	Opcodes []Opcode `json:"Opcodes"`
 }

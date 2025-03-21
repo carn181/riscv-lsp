@@ -23,6 +23,7 @@ func HandleInitialize(incoming []byte) types.InitializeResponse {
 		Response: types.Response{RPC: req.RPC, ID: &req.ID},
 		Result: types.InitializeResult{
 			Capabilities: types.ServerCapabilities{
+				HoverProvider: true,
 				TextDocumentSync: types.TextDocumentSync{
 					OpenClose: true,
 					Change: types.Incremental,

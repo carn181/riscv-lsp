@@ -5,6 +5,7 @@ import (
 	"os"
 	//	"log"
 	"riscv-lsp/logging"
+	"riscv-lsp/utils"
 	"riscv-lsp/types"
 )
 type File struct{
@@ -48,28 +49,9 @@ func CloseFile(path string){
 	Store.files[path]=f
 }
 
-func FindNewLineIndices(str string) []uint{
-	indices := []uint{0}
-	for i, r := range str {
-		if r == '\n' {
-			indices = append(indices, uint(i+1))
-		}
-	}
-	return indices
-}
 
-func ReplaceStrSlice(str string, i uint, j uint, replace string) string{
-	// i = index of where to start replacing from (Inclusive)
-	// j = index of till where to replace till (Exclusive)
-	if i > j {panic("Invalid Range: start > end")}
-	if j > uint(len(str)){panic("Invalid Range: end > len(str)")}
-	var start, remaining string
-	
-	remaining = str[j:]
-	start=str[:i]
-	
-	return start+replace+remaining
-}
+
+
 
 func ApplyChange(orig string, rng types.Range, replace string) string{
 	start, err := PositionToOffset(orig, rng.Start)
@@ -83,13 +65,13 @@ func ApplyChange(orig string, rng types.Range, replace string) string{
 	
 	//	logging.Logger.Printf("Found Start and End Indexes for Range %d-%d\n",start,end)
 	
-	modified := ReplaceStrSlice(orig, start, end, replace)
+	modified := utils.ReplaceStrSlice(orig, start, end, replace)
 	return modified
 }
 func PositionToOffset(str string, pos types.Position) (uint, error){
 	// When taking slice ranges, go handles [0:] and [:0] for empty strings
 	// So it's ok to have offset = len(str)
-	indices := FindNewLineIndices(str)
+	indices := utils.FindNewLineIndices(str)
 	if pos.Line > uint(len(indices)) {
 		return 0, fmt.Errorf("Line Number %d out of range 0-%d",pos.Line,len(indices))
 	} else if pos.Line == uint(len(indices)) {
