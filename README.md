@@ -4,8 +4,8 @@ Work In Progress.
 
 ## Guide
 The LSP assumes you have a `build` file in the workspace which has the command you use to build your workspace and see errors for.  
-Please change `symbolsDir` in `symbols/symbols.go` to the absolute path of where `symbols/riscv-docs` is stored on your system.  
-Will fix this by making a separate documentation package  
+If you are not using the default documentation, please change `symbolsDir` in `symbols/symbols.go` to the absolute path of where `symbols/riscv-docs` is stored on your system.  
+
 
 ## Todo
 - [x] Document Synchronization
